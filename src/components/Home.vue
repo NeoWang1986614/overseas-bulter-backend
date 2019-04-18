@@ -57,31 +57,6 @@ export default {
   methods: {
       handleSelect (index) {
       console.log('press button',index);
-    //   $.ajax({
-    //             url: 'http://127.0.0.1:8008/overseas-bulter/v1/house/search',
-    //             type: 'post',
-    //             data : JSON.stringify({
-    //                 'offset':0,
-    //                 'length':5
-    //                 }),
-    //             dataType: 'json',
-    //             success: function (data) {
-    //                 console.log(data)
-    //             },
-    //             error: function(xhr, errorType, error) {
-    //                 alert('Ajax request error, errorType: ' + errorType +  ', error: ' + error)
-    //             }
-    //         });
-        // this.$http.post(
-        //     'http://127.0.0.1:8008/overseas-bulter/v1/house/search',
-        //     {
-        //         offset: 0,
-        //         length: 5
-        //     },
-        //     {"emulateJson":false}
-        //     ).then( data => {
-        //         console.log(data)   
-        //     })
     }
   }
 }

@@ -26,7 +26,7 @@
                 </el-input>
                 <el-upload
                     class="avatar-uploader uploader-container"
-                    action="http://localhost:8008/overseas-bulter/v1/image"
+                    :action="imgUploadUrl"
                     :show-file-list="false"
                     :on-success="handleAvatarSuccess"
                     :before-upload="beforeAvatarUpload">
@@ -35,7 +35,7 @@
                 </el-upload>
                 <el-input
                     class="input-container"
-                    v-model="inputPrice" 
+                    v-model.number="caseInfo.price" 
                     placeholder="请输入价格">
                         <template slot="prepend">价格:</template>
                 </el-input>
@@ -43,7 +43,8 @@
                     class="input-container" 
                     v-model="caseInfo.content" 
                     type="textarea"
-                    :rows="30"
+                    resize="none"
+                    :rows="20"
                     placeholder="请输入内容">
                         <template slot="prepend">内容:</template>
                 </el-input>
@@ -73,6 +74,7 @@ export default {
   name: 'CaseEditor',
   data () {
     return {
+      imgUploadUrl: preUrl + '/overseas-bulter/v1/image',
       caseId: '',
       msg: 'Welcome to Your Vue.js App',
       caseInfo: {
@@ -82,7 +84,6 @@ export default {
         price: 0,
         level: 0
       },
-      inputPrice: '30000',
       isRecommended: false
     }
   },
@@ -107,7 +108,6 @@ export default {
       },
       onSaveClick: function () {
         console.log('save case: ', this.caseInfo);
-        this.caseInfo.price = parseInt(this.inputPrice);
 
         var executeFunc = null;
         var message = '';

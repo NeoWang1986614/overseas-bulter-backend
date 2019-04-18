@@ -17,8 +17,7 @@ export const convertServiceObject = function(obj) {
         type: obj.type,
         layout: obj.layout,
         content: obj.content,
-        price: obj.price,
-        create_time: obj.createTime
+        price: obj.price
     }
 }
 

@@ -3,37 +3,40 @@
     <div class="indicator-container">
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/service-manager' }">服务管理</el-breadcrumb-item>
-            <el-breadcrumb-item>服务编辑</el-breadcrumb-item>
+            <el-breadcrumb-item>{{textMap[serviceType]}}服务编辑</el-breadcrumb-item>
         </el-breadcrumb>
     </div>
     <div class="scroll-container">
         <div class="scroll">
             <div class="scroll-content">
-                <div class="title-container">编辑{{textMap[services[currentServiceIndex].type]}}服务内容</div>
-
                 <div class="layout-dropdown" v-if="isHomeDecoration">
                     <el-dropdown>
                         <span class="el-dropdown-link">
-                            {{textMap[services[currentServiceIndex].layout]}}<i class="el-icon-arrow-down el-icon--right"></i>
+                            {{textMap[layoutOptions[layoutSelect]]}}<i class="el-icon-arrow-down el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item v-for="item in services" :key="item.uid" @click.native="onDropdownItemSelect(item.layout)">
-                                {{textMap[item.layout]}}
+                            <el-dropdown-item v-for="(item, index) in layoutOptions" 
+                            :key="item" 
+                            :disabled="'all' == item"
+                            @click.native="onDropdownItemSelect(index)">
+                                {{textMap[item]}}
                             </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
+                <div class="title-container">{{textMap[serviceType]}}服务编辑-{{textMap[layoutOptions[layoutSelect]]}}户型</div>
                 <el-input 
                     class="input-container" 
-                    v-model="services[currentServiceIndex].content" 
+                    v-model="service.content" 
                     type="textarea"
-                    :rows="30"
+                    :rows="20"
+                    resize="none"
                     placeholder="请输入服务内容">
                         <template slot="prepend">内容:</template>
                 </el-input>
                 <el-input
                     class="input-container"
-                    v-model.number="services[currentServiceIndex].price" 
+                    v-model.number="service.price" 
                     placeholder="请输入价格">
                         <template slot="prepend">价格:</template>
                 </el-input>
@@ -50,6 +53,7 @@
 <script>
 import {preUrl} from '../../config/http.js'
 import {textMap} from '../../common/map.js'
+import {getServicesByTypeLayoutAsync, addServiceAsync, modifyServiceAsync} from '../../common/utils.js'
 import {convertServiceEntities, convertServiceObject} from '../entity/service.js'
 
 export default {
@@ -59,23 +63,43 @@ export default {
     this.textMap = textMap;
     this.serviceType = this.$route.params.type;
     this.isHomeDecoration = 'home-decoration' == this.serviceType;
-    this.getServicesAsync(this.serviceType, data => {
-        console.log(data);
-        if(data.length)
-        this.services = data;
+    if(this.isHomeDecoration){
+        this.layoutSelect = 1;
+    }
+    this.updateServicesAsync(res=>{
+        this.setServiceFromServices();
     });
-    
   },
   data () {
     return {
       serviceType: '',
       services: [{}],
+      service: {},
       currentServiceIndex: 0,
       isHomeDecoration: true,
-      textMap: {}
+      textMap: {},
+      /*dropdown*/
+      layoutOptions:['all', 'studio','one-bedroom','two-bedroom'],
+      layoutSelect: 0
     }
   },
   methods: {
+      updateServicesAsync: function(callback){
+        this.getServicesAsync(this.serviceType, this.layoutOptions[this.layoutSelect], data => {
+                console.log(data);
+                this.services = convertServiceEntities(data);
+                if(callback){
+                    callback();
+                }
+            });
+      },
+      setServiceFromServices: function() {
+          if(0==this.services.length){
+              this.service = {};
+          }else{
+              this.service = this.services[0];
+          }
+      },
       getServiceIndexByLayout: function(layout) {
           var result = null;
           this.services.forEach((item, index) =>{
@@ -88,71 +112,51 @@ export default {
       },
       onDropdownItemSelect: function(value) {
           console.log(value);
-          this.currentServiceIndex = this.getServiceIndexByLayout(value);
-          console.log(this.service);
+          this.layoutSelect = value;
+          this.updateServicesAsync(res=>{
+                this.setServiceFromServices();
+            });
       },
       udateLayoutSelect: function(){
         this.currentLayoutText = textMap[this.currentLayoutSelect];
       },
       onSaveClick: function(value) {
           console.log('save');
-          this.saveAllServicesAsync(_ => {
-              console.log('save success!');
-              this.$message({
-                  message: '保存成功!',
-                  type: 'success'
-                  });
-          });
+          if(0 == this.services.length){
+              this.addServiceAsync();
+          }else{
+              this.modifyServiceAsync();
+          }
       },
-      getServicesAsync: function(type, callback){
-          this.$http.post(
-            preUrl + '/overseas-bulter/v1/service/search',
-            {
-                type: this.serviceType
-            },
-            {"emulateJson":false}
-            ).then( res => {
-                console.log(res.body); 
-                var convertedServies = convertServiceEntities(res.body);
-                if(callback){
-                    callback(convertedServies)
-                }
-            })
+      getServicesAsync: function(type, layout, callback){
+          getServicesByTypeLayoutAsync(type, layout, callback);
       },
-      saveServiceAsync: function(service, callback){
-          this.$http.put(
-            preUrl + '/overseas-bulter/v1/service',
-            convertServiceObject(service),
-            {"emulateJson":false}
-            ).then( res => {
-                console.log(res.body); 
-                if(callback){
-                    callback()
-                }
-            })
+      addServiceAsync(){
+        this.service.type = this.serviceType;
+        this.service.layout = this.layoutOptions[this.layoutSelect];
+        addServiceAsync(convertServiceObject(this.service), res => {
+            console.log('add success!');
+            this.notifyMessage('保存服务成功!');
+            this.updateServicesAsync(res=>{
+                this.setServiceFromServices();
+            });
+        })
       },
-      saveAllServicesAsync: function(callback){
-        if(0 == this.services.length){
-            return;
-        }
-        var allPromise = [];
-        for(let i=0 ; i < this.services.length; i++ ){
-            let tempPromise = new Promise((resolve, reject) => {
-            this.saveServiceAsync(this.services[i], _ => {
-                    resolve()
-            })
-            allPromise.push(tempPromise);
-        });
-
-        Promise.all(allPromise).then(res => {
-            console.log('save all services success !!');
-            if(callback){
-                callback();
-            }
-        });
-
-      }
-          
+      modifyServiceAsync(){
+          console.log('modifyServiceAsync:',this.service);
+        modifyServiceAsync(convertServiceObject(this.service), res => {
+            console.log('modify success!');
+            this.notifyMessage('修改服务成功!');
+            this.updateServicesAsync(res=>{
+                this.setServiceFromServices();
+            });
+        })
+      },
+      notifyMessage: function(msg){
+          this.$message({
+                message: msg,
+                type: 'success'
+            });
       }
   }
 }
