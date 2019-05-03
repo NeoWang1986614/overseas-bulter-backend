@@ -27,5 +27,8 @@ export const textMap = {
     'San Juan': '仙范市',
     'Taguig': '塔吉格市',
     'Valenzuela': '瓦伦瑞拉市',
-    'the municipality of Pateros': '巴提洛斯自治市'
+    'the municipality of Pateros': '巴提洛斯自治市',
+    'rent-record': '出租报告',
+    'inspect-record': '验房报告',
+    'repair-record': '维修报告',
 }

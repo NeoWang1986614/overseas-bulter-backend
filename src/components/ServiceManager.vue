@@ -19,16 +19,16 @@ export default {
       msg: 'Welcome to Your Vue.js App',
       services: [
         {
-          value: 'house-rent',
-          iconUrl: '/static/house-rent.png'
-        },
-        {
           value: 'home-decoration',
           iconUrl: '/static/home-decoration.png'
         },
         {
           value: 'house-maintain',
           iconUrl: '/static/house-maintain.png'
+        },
+        {
+          value: 'house-rent',
+          iconUrl: '/static/house-rent.png'
         }],
       textMap: null
     }

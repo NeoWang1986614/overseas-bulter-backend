@@ -306,3 +306,125 @@ export function modifyServiceAsync(serviceEntity, callback) {
         }
     })
 }
+
+export function getUserAsync(userId, callback) {
+    Vue.http.get(
+        preUrl + '/overseas-bulter/v1/user?uid=' + userId, { "emulateJson": false }
+    ).then(res => {
+        console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}
+
+export function employeeCheckAsync(userName, password, callback) {
+    Vue.http.post(
+        preUrl + '/overseas-bulter/v1/employee/check', {
+            user_name: userName,
+            password: password
+        }, { "emulateJson": false }
+    ).then(res => {
+        console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}
+
+export function queryRecordsAsync(recordType, orderId, offset, count, callback) {
+    Vue.http.post(
+        preUrl + '/overseas-bulter/v1/' + recordType + '/search', {
+            order_id: orderId,
+            offset: offset,
+            count: count
+        }, { "emulateJson": false }
+    ).then(res => {
+        // console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}
+
+export function deleteRecordAsync(recordType, uid, callback) {
+    Vue.http.delete(
+        preUrl + '/overseas-bulter/v1/' + recordType + '?uid=' + uid, { "emulateJson": false }
+    ).then(res => {
+        console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}
+
+export function addRecordAsync(recordType, entity, callback) {
+    Vue.http.post(
+        preUrl + '/overseas-bulter/v1/' + recordType,
+        entity, { "emulateJson": false }
+    ).then(res => {
+        console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}
+
+// export function addRentRecordAsync(entity, callback) {
+//     Vue.http.post(
+//         preUrl + '/overseas-bulter/v1/rent-record',
+//         entity, { "emulateJson": false }
+//     ).then(res => {
+//         console.log(res.body);
+//         if (callback) {
+//             callback(res.body)
+//         }
+//     })
+// }
+
+// export function addInspectRecordAsync(entity, callback) {
+//     Vue.http.post(
+//         preUrl + '/overseas-bulter/v1/inspect-record',
+//         entity, { "emulateJson": false }
+//     ).then(res => {
+//         console.log(res.body);
+//         if (callback) {
+//             callback(res.body)
+//         }
+//     })
+// }
+
+// export function addRepairRecordAsync(entity, callback) {
+//     Vue.http.post(
+//         preUrl + '/overseas-bulter/v1/repair-record',
+//         entity, { "emulateJson": false }
+//     ).then(res => {
+//         console.log(res.body);
+//         if (callback) {
+//             callback(res.body)
+//         }
+//     })
+// }
+
+export function updateRecordAsync(recordType, uid, entity, callback) {
+    Vue.http.put(
+        preUrl + '/overseas-bulter/v1/' + recordType + '?uid=' + uid,
+        entity, { "emulateJson": false }
+    ).then(res => {
+        console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}
+
+export function getRecordAsync(recordType, uid, callback) {
+    Vue.http.get(
+        preUrl + '/overseas-bulter/v1/' + recordType + '?uid=' + uid, { "emulateJson": false }
+    ).then(res => {
+        console.log(res.body);
+        if (callback) {
+            callback(res.body)
+        }
+    })
+}

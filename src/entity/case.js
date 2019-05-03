@@ -23,11 +23,9 @@ export const convertCaseObject = function(obj) {
 }
 
 export const convertCaseEntities = function(entities) {
-    console.log('convert')
     var result = [];
     for (let i = 0; i < entities.length; i++) {
         result.push(convertCaseEntity(entities[i]))
     }
-    console.log(result)
     return result;
 }

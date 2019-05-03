@@ -6,6 +6,10 @@ export const convertFeedbackEntity = function(entity) {
         authorId: entity.author_id,
         content: entity.content,
         isRead: entity.is_read,
+        income: entity.income,
+        outgoings: entity.outgoings,
+        accountingDate: entity.accounting_date,
+        updateTime: entity.update_time,
         createTime: entity.create_time
     }
 }
@@ -15,7 +19,11 @@ export const convertFeedbackObject = function(obj) {
     return {
         order_id: obj.orderId,
         author_id: obj.authorId,
-        content: obj.content
+        content: obj.content,
+        isRead: obj.isRead,
+        income: obj.income,
+        outgoings: obj.outgoings,
+        accounting_date: obj.accountingDate,
     }
 }
 

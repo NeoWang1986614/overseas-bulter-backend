@@ -167,9 +167,10 @@
           </el-table-column>
           <el-table-column
             prop="id"
+            :show-overflow-tooltip="true"
             label="订单编号"
             :resizable="true"
-            width="160">
+            width="80">
           </el-table-column>
           <el-table-column
             prop="type"
@@ -201,12 +202,20 @@
           <el-table-column
             :resizable="true"
             :show-overflow-tooltip="true"
+            :formatter="nameFormatter"
+            label="用户名"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            :resizable="true"
+            :show-overflow-tooltip="true"
             :formatter="addressFormatter"
             label="房产地址"
             width="120">
           </el-table-column>
           <el-table-column
             :resizable="true"
+            :show-overflow-tooltip="true"
             prop="createTime"
             label="下单时间"
             width="140">
@@ -249,7 +258,7 @@
 
 <script>
 import {number_max_value, constAddressCountry, constAddressProvince, constAddressCity} from '../../common/const.js'
-import {deleteOrderAsync} from '../../common/utils.js'
+import {deleteOrderAsync, getUserAsync} from '../../common/utils.js'
 import {textMap} from '../../common/map.js'
 import {
   getAllOrdersAsync,
@@ -437,7 +446,7 @@ export default {
     /*表样式，表内容*/
     tableCellStyle: function({ row, column, rowIndex, columnIndex }){
       var styleString = 'font-size: 10px;';
-      if(0 == columnIndex || 1 == columnIndex || 2 == columnIndex || 3 == columnIndex || 5 == columnIndex){
+      if(0 == columnIndex || 1 == columnIndex || 2 == columnIndex || 3 == columnIndex || 5 == columnIndex || 6 == columnIndex){
         styleString += 'text-align: center;';
       }
       else if (7 == columnIndex) {
@@ -472,11 +481,26 @@ export default {
     statusFormatter: function(row, column, cellValue, index){
       return textMap[cellValue];
     },
+    nameFormatter: function(row, column, cellValue, index){
+      return this.orders[index].userName;
+    },
     addressFormatter: function(row, column, cellValue, index){
-      return textMap[this.orders[index].houseCountry] +
-      textMap[this.orders[index].houseProvince] + 
-      textMap[this.orders[index].houseCity] +
-      this.orders[index].houseAddress;
+      return 'Room ' + this.orders[index].houseRoomNum + ', ' +
+        'Building ' + this.orders[index].houseBuildingNum + ', ' + 
+        this.orders[index].houseStreetNum + ' ' + this.orders[index].houseStreetName + ' Street, ' + 
+        this.orders[index].houseAdLevel3 + ', ' + 
+        this.orders[index].houseAdLevel2 + ', ' +
+        this.orders[index].houseAdLevel1 + ', ' +
+        this.orders[index].houseNation;
+
+      // return textMap[this.orders[index].houseNation] +
+      // textMap[this.orders[index].houseAdLevel1] + 
+      // textMap[this.orders[index].houseAdLevel2] +
+      // this.orders[index].houseAdLevel3 +
+      // this.orders[index].houseStreetName +
+      // this.orders[index].houseStreetNum + '号' +
+      // this.orders[index].houseBuildingNum + '栋' +
+      // this.orders[index].houseRoomNum + '室';
     },
     /**/
     onSearchModeChange: function(item){
@@ -534,6 +558,16 @@ export default {
       this.currentPage = 1;
       this.updateOrderList();
     },
+    updateUserInfo: function(){
+      if(0!=this.orders.length){
+        for(let i = 0; i < this.orders.length; i++){
+          getUserAsync(this.orders[i].placerId, res => {
+            console.log('get user', res);
+            this.orders[i].userName = res.name;
+          });
+        }
+      }
+    },
     updateOrderList: function(){
       console.log(this.seachModeCurrentOptions);
       if(0 == this.seachModeCurrentOptions.length || this.seachModeCurrentOptions[0]=='all'){
@@ -541,6 +575,7 @@ export default {
         getAllOrdersAsync((this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                   this.orders = convertOrderEntities(res.entities);
                   this.totalCount = res.total;
+                  this.updateUserInfo();
                   console.log('orders: ', this.orders);
                 })
       }
@@ -550,6 +585,7 @@ export default {
           getOrdersByNameAsync(this.userInfoName, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }else if(this.seachModeCurrentOptions[1]=='id-card-number') {
@@ -557,6 +593,7 @@ export default {
           getOrdersByIdCardNumberAsync(this.userInfoIdCardNumber, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }else if(this.seachModeCurrentOptions[1]=='phone-number') {
@@ -564,6 +601,7 @@ export default {
           getOrdersByPhoneNumberAsync(this.userInfoPhoneNumber, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }
@@ -575,6 +613,7 @@ export default {
           getOrdersBeforeTimeAsync(this.createTimeBeforeTime, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }else if(this.seachModeCurrentOptions[1]=='after-time') {
@@ -582,6 +621,7 @@ export default {
           getOrdersAfterTimeAsync(this.createTimeAfterTime, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }else if(this.seachModeCurrentOptions[1]=='range-time') {
@@ -589,6 +629,7 @@ export default {
           getOrdersRangeTimeAsync(this.createTimeRangeTimeFrom, this.createTimeRangeTimeTo, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }
@@ -603,6 +644,7 @@ export default {
           (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
       }
@@ -613,6 +655,7 @@ export default {
           (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
       }
@@ -621,6 +664,7 @@ export default {
         getOrdersByStatusGroupAsync(this.checkOrderStatuses, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
       }
@@ -630,6 +674,7 @@ export default {
           getOrdersBelowPriceAsync(parseInt(this.orderPriceBelow), (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }else if(this.seachModeCurrentOptions[1]=='above-price') {
@@ -637,6 +682,7 @@ export default {
           getOrdersAbovePriceAsync(parseInt(this.orderPriceAbove), (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }else if(this.seachModeCurrentOptions[1]=='range-price') {
@@ -644,6 +690,7 @@ export default {
           getOrdersRangePriceAsync(parseInt(this.orderPriceRangeFrom),parseInt(this.orderPriceRangeTo), (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
         }
@@ -654,6 +701,7 @@ export default {
         getOrdersByOrderTypeGroupAsync(this.checkOrderTypes, (this.currentPage - 1) * this.countPerPage, this.countPerPage , res => {
                 this.orders = convertOrderEntities(res.entities);
                 this.totalCount = res.total;
+                this.updateUserInfo();
                 console.log('orders: ', this.orders);
               });
       }

@@ -52,10 +52,7 @@ export default {
             },
             {"emulateJson":false}
             ).then( res => {
-                // console.log(res); 
-                console.log(res.body); 
                 var convertedArr = convertCaseEntities(res.body);
-                // this.cases = convertedArr
                 if(callback){
                     callback(convertedArr);
                 }

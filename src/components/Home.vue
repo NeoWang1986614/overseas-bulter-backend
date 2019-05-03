@@ -10,7 +10,7 @@
         <div class="nav-container">
             <el-menu
                 router
-                default-active="$route.path"
+                default-active="/case-manager"
                 class="el-menu-vertical-demo"
                 @select="handleSelect">
             <el-menu-item index="/case-manager">

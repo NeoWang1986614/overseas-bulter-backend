@@ -9,6 +9,9 @@ import OrderManager from '@/components/OrderManager'
 import OrderEditor from '@/components/OrderEditor'
 import ServiceManager from '@/components/ServiceManager'
 import ServiceEditor from '@/components/ServiceEditor'
+import FeedbackEditor from '@/components/FeedbackEditor'
+
+import { getCookie } from '../../common/cookie.js'
 
 Vue.use(Router)
 
@@ -51,39 +54,31 @@ var router = new Router({
                 path: '/service-editor',
                 name: 'ServiceEditor',
                 component: ServiceEditor
+            }, {
+                path: '/feedback-editor',
+                name: 'FeedbackEditor',
+                component: FeedbackEditor
             }, ]
         }
     ]
 })
 
 router.beforeEach((to, from, next) => {
-    console.log('before each');
-    console.log('to = ', to);
-    console.log('from=', from);
-    console.log('next=', next);
 
+    document.title = '海外管家后台管理系统';
 
-    next();
+    if (to.fullPath == '/') {
+        next();
+        return;
+    }
+
+    var isLoginSuccess = getCookie('isLoginSuccess')
+    console.log('isLoginSuccess from cookie', isLoginSuccess);
+    if (isLoginSuccess && 'success' == isLoginSuccess) {
+        next();
+    } else {
+        router.push({ path: '/' });
+    }
+
 });
 export default router;
-// vueRouter.beforeEach(function(to, from, next) {
-//             console.log("to", to);
-//             console.log("from", from);
-//             console.log("next", next);
-// const nextRoute = ['account', 'order', 'course'];
-// const auth = store.state.auth;
-// //跳转至上述3个页面
-// if (nextRoute.indexOf(to.name) >= 0) {
-//     //未登录
-//     if (!store.state.auth.IsLogin) {
-//         vueRouter.push({ name: 'login' })
-//     }
-// }
-// //已登录的情况再去登录页，跳转至首页
-// if (to.name === 'login') {
-//     if (auth.IsLogin) {
-//         vueRouter.push({ name: 'home' });
-//     }
-// }
-// next();
-//

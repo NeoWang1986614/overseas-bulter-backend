@@ -22,12 +22,15 @@
                 placeholder="请输入密码">
             </el-input>
             <el-button class="login-button" type="primary" @click="onLoginClick" >登 录</el-button>
+            <div class="register-button" @click="onRegisterClick" >注册帐号</div>
         </div>
     </div>
   </div>
 </template>
 
 <script>
+import {employeeCheckAsync} from '../../common/utils.js'
+
 export default {
   name: 'Login',
   data () {
@@ -41,16 +44,25 @@ export default {
   methods:{
       onLoginClick: function(){
           if(this.checkInputValid()){
-              if('root' == this.userName && 'root123' == this.password){
-                  this.$router.push({name: 'Home'});
-              }else{
-                  this.$message(
-                        {
-                            message: '用户名或者密码不对!',
-                            type: 'warning'
-                        }
-                    );
-              }
+            employeeCheckAsync(this.userName, this.password, res => {
+                console.log('employee check :', res);
+                if(1001 == res.code || 1002 == res.code){
+                    this.$message(
+                    {
+                        message: '用户名或者密码不对!',
+                        type: 'warning'
+                    });   
+                }else if(0 == res.code){
+                    this.$message(
+                    {
+                        message: '登录成功!',
+                        type: 'success'
+                    }); 
+                    // setCookie('isLoginSuccess', true, 0.5);
+                    this.$cookieStore.setCookie( 'isLoginSuccess' , 'success');
+                    this.$router.push({path: '/case-manager'});
+                }
+            });
           }
       },
       checkInputValid: function(){
@@ -70,6 +82,9 @@ export default {
               });
           }
           return result;
+      },
+      onRegisterClick: function(){
+          console.log('register');
       }
   }
 }
@@ -154,6 +169,19 @@ export default {
     height: 1px;
     width: 80px;
     background: lightgray;
+}
+
+.register-button {
+    padding: 0;
+    margin-left: -170px;
+    border: none;
+    height: 40px;
+    width: 60px;
+    line-height: 40px;
+    color: gray;
+    font-size: 12px;
+    cursor: pointer;
+    // background: blue;
 }
 
 </style>
