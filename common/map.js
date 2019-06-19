@@ -1,8 +1,13 @@
 export const textMap = {
+    'office': '办公',
+    'apartment': '公寓',
+    'self': '自主',
+    'proxy': '菲洋代理',
     'all': '所有',
     'house-rent': '房屋出租',
     'home-decoration': '家装布置',
     'house-maintain': '维护保养',
+    'others': '其他',
     'studio': '单间',
     'one-bedroom': '一室一厅',
     'two-bedroom': '二室一厅',
@@ -28,7 +33,7 @@ export const textMap = {
     'Taguig': '塔吉格市',
     'Valenzuela': '瓦伦瑞拉市',
     'the municipality of Pateros': '巴提洛斯自治市',
-    'rent-record': '出租报告',
+    'billing-record': '账单记录',
     'inspect-record': '验房报告',
     'repair-record': '维修报告',
 }

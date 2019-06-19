@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <div class="up-container" :style="{backgroundImage:`url(${img})`}">
-        <span class="title-container">海外管家后台管理系统</span>
+        <span class="title-container">菲洋管家后台管理系统</span>
         <div class="operate-container">
             <div class="welcome-container">
                 <div class="line"></div><span>欢迎登录</span><div class="line"></div>
@@ -60,7 +60,7 @@ export default {
                     }); 
                     // setCookie('isLoginSuccess', true, 0.5);
                     this.$cookieStore.setCookie( 'isLoginSuccess' , 'success');
-                    this.$router.push({path: '/case-manager'});
+                    this.$router.push({path: '/carousel-figure-manager'});
                 }
             });
           }

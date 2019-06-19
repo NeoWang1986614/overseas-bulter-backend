@@ -7,10 +7,15 @@
 <script>
 export default {
   name: 'First',
+  created: function(){
+  },
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  methods:{
+    
   }
 }
 </script>

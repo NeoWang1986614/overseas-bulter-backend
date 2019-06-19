@@ -14,11 +14,21 @@
                 <div class="vertical-line"></div>
                 <div class="order-common-item">户型: {{textMap[order.houseLayout]}}</div>
                 <div class="vertical-line"></div>
+                <div class="order-common-item">面积: {{order.houseArea}}平方米</div>
+                <div class="vertical-line"></div>
                 <div class="order-common-item">状态: {{textMap[order.status]}}</div>
                 <div class="vertical-line"></div>
-                <div class="order-common-item">下单时间: {{order.createTime}}</div>
+                <div class="order-common-item" v-if="isHouseMaintain">有效期限: {{metaData.year}}年</div>
+                <div class="vertical-line" v-if="isHouseMaintain"></div>
+                <a class="order-common-item" v-if="isHomeDecoration" :href="metaData.attachment" download="decoration" target="下载">附件家装清单</a>
+                <div class="vertical-line" v-if="isHomeDecoration"></div>
+                <div class="order-common-item">下单时间: {{order.createTimeCn}}</div>
                 <div class="vertical-line"></div>
-                <div class="order-common-item">用户信息: {{user.name}}(电话号码:{{user.phoneNumber}}-身份证号码:{{user.idCardNumber}})</div>
+                <div class="order-common-item">客户姓名: {{user.name}}</div>
+                <div class="vertical-line"></div>
+                <div class="order-common-item">客户电话号码: {{user.phoneNumber}}</div>
+                <div class="vertical-line"></div>
+                <a class="order-common-item" :href="metaData.houseMeta.layoutChart[0]" target="_blank">户型图</a>
                 <div class="vertical-line"></div>
                 <div class="order-common-item">房产地址: 
                     {{'Room ' + order.houseRoomNum + ', ' +
@@ -59,16 +69,16 @@
         <div class="middle-line" v-if="isNeedExtralPart"></div>
         <div class="right-part-container" v-if="isNeedExtralPart">
             <div class="feedback-container" v-if="isNeedFeedback">
-                <span class="title-container">订单反馈报告</span>
+                <span class="title-container">相关反馈</span>
                 <div class="feedback-detail-container">
                     <div style="width: 100%; height: 40px; background: white; display: flex; justify-content: space-around; align-items: center;">
-                            <el-radio v-model="recordType" label="rent-record">出租</el-radio>
+                            <el-radio v-model="recordType" label="billing-record">账单</el-radio>
                             <el-radio v-model="recordType" label="inspect-record">验房</el-radio>
                             <el-radio v-model="recordType" label="repair-record">维修</el-radio>
                     </div>
-                    <div v-if="'rent-record' == recordType"
+                    <div v-if="'billing-record' == recordType"
                          style="width: 100%; min-height: 100px; background: whitesmoke; overflow-y: scroll;">
-                        <div v-for="item in rentRecords"
+                        <div v-for="item in billingRecords"
                             style="margin-top: 4px; width: 100%; height: 120px; background: white; padding-left: 4px; font-size: 12px; display: flex; flex-direction: column; justify-content: space-around;">
                             <div>创建时间: {{item.createTime}}</div>
                             <div>结算范围: {{item.timeRange.from}}到{{item.timeRange.to}}</div>
@@ -133,12 +143,12 @@ import {
     queryRecordsAsync,
     addFeedbackAsync, 
     getUserAsync,
-    deleteFeedbackAsync,
-    deleteRecordAsync} from '../../common/utils.js'
+    deleteRecordAsync,
+    getDateCnText} from '../../common/utils.js'
 import {convertOrderEntity, convertOrderObject} from '../entity/order.js'
 import {convertFeedbackObject} from '../entity/feedback.js'
 import {convertFeedbackEntities} from '../entity/feedback.js'
-import {convertRentRecordEntities} from '../entity/rent-record.js'
+import {convertBillingRecordEntities} from '../entity/billing-record.js'
 import {convertInspectRecordEntities} from '../entity/inspect-record.js'
 import {convertRepairRecordEntities} from '../entity/repair-record.js'
 import {convertUserEntity} from '../entity/user.js'
@@ -152,6 +162,15 @@ export default {
       order: {},
       user: {},
       textMap: textMap,
+      isHomeDecoration: false,
+      isHouseMaintain: false,
+      metaData: {
+        year: '',
+        attachment: '',
+        houseMeta:{
+            layoutChart: ['']
+        }
+      },
       /*extral*/
       isNeedExtralPart: false,
       isNeedFeedback: false,
@@ -163,10 +182,11 @@ export default {
       feedbackOutgoings: 0,
       feedbackAccountingDate: '',
       /*record*/
-      recordType: 'rent-record',
-      rentRecords: [],
+      recordType: 'billing-record',
+      billingRecords: [],
       inspectRecords: [],
-      repairRecords: []
+      repairRecords: [],
+      layoutCharts: []
     }
   },
   created: function() {
@@ -174,9 +194,12 @@ export default {
     if(this.$route.params.hasOwnProperty('id')){
         console.log(this.$route.params['id']);
         getOrderAsync(this.$route.params['id'], res => {
-            console.log(res);
+            console.log('getOrderAsync res = ', res);
             this.order = convertOrderEntity(res);
+            console.log('order = ', this.order);
             this.checkOrderStatus();
+            this.checkServiceType();
+            this.makeMetaData();
             getUserAsync(this.order.placerId, res=>{
                 console.log('get user aysnc',res);
                 this.user = convertUserEntity(res);
@@ -186,6 +209,28 @@ export default {
     }
   },
   methods: {
+      checkServiceType: function(){
+          if('house-maintain' == this.order.type){
+              this.isHouseMaintain = true;
+          }else if('home-decoration' == this.order.type){
+              this.isHomeDecoration = true;
+          }
+      },
+      makeMetaData: function(){
+        console.log('makeMetaData type= ', this.order.type);
+        var metaTemp=JSON.parse(this.order.meta);
+        console.log('metaTemp = ' , metaTemp);
+        if(this.isHouseMaintain){
+            console.log('isHouseMaintain');
+            this.metaData.year = metaTemp.year;
+        }else if(this.isHomeDecoration){
+            this.metaData.attachment = metaTemp.attachment;
+        }
+
+        this.metaData.houseMeta = JSON.parse(metaTemp.houseMeta);
+        
+        console.log('this.metaData = ', this.metaData);
+     },
       onRecordItemClick: function(recordType, item){
           this.$router.push({
               name: 'FeedbackEditor',
@@ -263,10 +308,6 @@ export default {
             
             returun 
       },
-      onFeedbackDeleteClick: function(item){
-          console.log('feedback item = ', item);
-          deleteFeedbackAsync('')
-      },
       onAddRecordClick: function(){
           this.$router.push({name: 'FeedbackEditor', params: {editType: 'add', orderId: this.order.id}});
       },
@@ -293,11 +334,11 @@ export default {
       },
       updateFeedbacks: function() {
 
-        queryRecordsAsync('rent-record', this.order.id, 0, 10000, res => {
-            console.log('query rent record res = ', res);
-            var rentRecords = convertRentRecordEntities(res.entities);
-            console.log('rent records = ', rentRecords);
-            this.rentRecords = rentRecords;
+        queryRecordsAsync('billing-record', this.order.id, 0, 10000, res => {
+            console.log('query billing record res = ', res);
+            var billingRecords = convertBillingRecordEntities(res.entities);
+            console.log('billing records = ', billingRecords);
+            this.billingRecords = billingRecords;
         });
         queryRecordsAsync('inspect-record', this.order.id, 0, 10000, res => {
             console.log('query inspect record res = ', res);

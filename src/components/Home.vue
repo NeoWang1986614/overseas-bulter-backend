@@ -10,25 +10,33 @@
         <div class="nav-container">
             <el-menu
                 router
-                default-active="/case-manager"
+                default-active="/carousel-figure-manager"
                 class="el-menu-vertical-demo"
                 @select="handleSelect">
-            <el-menu-item index="/case-manager">
-                <i class="el-icon-location"></i>
-                <span slot="title">案例管理</span>
-            </el-menu-item>
-            <el-menu-item index="/service-manager">
-                <i class="el-icon-document"></i>
-                <span slot="title">服务管理</span>
-            </el-menu-item>
-            <el-menu-item index="/order-manager">
-                <i class="el-icon-menu"></i>
-                <span slot="title">订单管理</span>
-            </el-menu-item>
-            <el-menu-item index="/authority-manager">
-                <i class="el-icon-setting"></i>
-                <span slot="title">权限管理</span>
-            </el-menu-item>
+                <el-menu-item index="/carousel-figure-manager">
+                    <i class="el-icon-document"></i>
+                    <span slot="title">首页轮播图</span>
+                </el-menu-item>
+                <el-menu-item index="/order-manager">
+                    <i class="el-icon-menu"></i>
+                    <span slot="title">订单</span>
+                </el-menu-item>
+                <el-menu-item index="/service-primary-manager">
+                    <i class="el-icon-setting"></i>
+                    <span slot="title">服务</span>
+                </el-menu-item>
+                <el-menu-item index="/layout-manager">
+                    <i class="el-icon-setting"></i>
+                    <span slot="title">户型</span>
+                </el-menu-item>
+                <el-menu-item index="/price-params-manager">
+                    <i class="el-icon-setting"></i>
+                    <span slot="title">价格参数</span>
+                </el-menu-item>
+                <el-menu-item index="/house-deal-manager">
+                    <i class="el-icon-setting"></i>
+                    <span slot="title">出租出售</span>
+                </el-menu-item>
             </el-menu>
         </div>
         <div class="content-container">

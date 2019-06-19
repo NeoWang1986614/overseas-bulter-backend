@@ -249,6 +249,7 @@
         <el-pagination
           layout="total, prev, pager, next, jumper"
           :total="totalCount"
+          :page-size="countPerPage"
           @current-change="onPaginationChange">
         </el-pagination>
       </div>
@@ -439,7 +440,7 @@ export default {
       checkOrderTypes:[],
       /*pagination*/
       currentPage: 1,
-      countPerPage: 10
+      countPerPage: 8
     }
   },
   methods:{
@@ -492,15 +493,6 @@ export default {
         this.orders[index].houseAdLevel2 + ', ' +
         this.orders[index].houseAdLevel1 + ', ' +
         this.orders[index].houseNation;
-
-      // return textMap[this.orders[index].houseNation] +
-      // textMap[this.orders[index].houseAdLevel1] + 
-      // textMap[this.orders[index].houseAdLevel2] +
-      // this.orders[index].houseAdLevel3 +
-      // this.orders[index].houseStreetName +
-      // this.orders[index].houseStreetNum + '号' +
-      // this.orders[index].houseBuildingNum + '栋' +
-      // this.orders[index].houseRoomNum + '室';
     },
     /**/
     onSearchModeChange: function(item){
@@ -576,7 +568,8 @@ export default {
                   this.orders = convertOrderEntities(res.entities);
                   this.totalCount = res.total;
                   this.updateUserInfo();
-                  console.log('orders: ', this.orders);
+                  console.log('update total: ', this.totalCount);
+                  console.log('update orders: ', this.orders);
                 })
       }
       else if(2==this.seachModeCurrentOptions.length && this.seachModeCurrentOptions[0]=='user-info'){
@@ -756,7 +749,7 @@ export default {
 
 .order-list-container {
   width: 100%;
-  height: 100px;
+  max-height: 500px;
   flex-grow: 1;
   // background: orange;
 }

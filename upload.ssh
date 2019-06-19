@@ -1,0 +1,1 @@
+scp -r ./dist/* root@129.28.57.139:/root/opt/back-end

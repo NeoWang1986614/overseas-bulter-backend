@@ -1,5 +1,5 @@
-export const convertRentRecordEntity = function(entity) {
-    console.log('convert rent record entity')
+export const convertBillingRecordEntity = function(entity) {
+    console.log('convert billing record entity')
     return {
         uid: entity.uid,
         orderId: entity.order_id,
@@ -16,7 +16,7 @@ export const convertRentRecordEntity = function(entity) {
 
 /* fee item */
 export const convertFeeItemEntity = function(entity) {
-    console.log('convert rent record entity')
+    console.log('convert billing record entity')
     return {
         title: entity.title,
         amount: entity.amount,
@@ -24,7 +24,7 @@ export const convertFeeItemEntity = function(entity) {
 }
 
 export const convertFeeEntities = function(entities) {
-    console.log('convert RentRecord entities')
+    console.log('convert Fee entities')
     var result = [];
     for (let i = 0; i < entities.length; i++) {
         result.push(convertFeeItemEntity(entities[i]))
@@ -35,7 +35,7 @@ export const convertFeeEntities = function(entities) {
 
 /* time rang*/
 export const convertTimeRangeEntity = function(entity) {
-    console.log('convert rent record entity')
+    console.log('convert billing record entity')
     return {
         from: entity.from,
         to: entity.to,
@@ -43,8 +43,8 @@ export const convertTimeRangeEntity = function(entity) {
 }
 
 
-export const convertRentRecordObject = function(obj) {
-    console.log('convert Rent Record object')
+export const convertBillingRecordObject = function(obj) {
+    console.log('convert Billing Record object')
     return {
         order_id: obj.orderId,
         income: obj.income,
@@ -56,11 +56,11 @@ export const convertRentRecordObject = function(obj) {
     }
 }
 
-export const convertRentRecordEntities = function(entities) {
-    // console.log('convert RentRecord entities')
+export const convertBillingRecordEntities = function(entities) {
+    // console.log('convert BillingRecord entities')
     var result = [];
     for (let i = 0; i < entities.length; i++) {
-        result.push(convertRentRecordEntity(entities[i]))
+        result.push(convertBillingRecordEntity(entities[i]))
     }
     console.log(result)
     return result;

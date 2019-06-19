@@ -24,7 +24,7 @@
         </el-dropdown>
       </div>
       <div class="edit-container">
-        <div class="record-container" v-if="'rent-record' == recordTypeOptions[recordTypeCurrentIndex]">
+        <div class="record-container" v-if="'billing-record' == recordTypeOptions[recordTypeCurrentIndex]">
           <el-collapse style="padding: 0 10px;">
             <el-collapse-item :title="incomeTotalTitle" name="1">
               <div class="sub-item-container" v-for="(item, index) in incomeItems">
@@ -360,7 +360,7 @@
 
 <script>
 import {textMap} from '../../common/map.js'
-import {convertRentRecordEntity, convertRentRecordObject} from '../entity/rent-record.js'
+import {convertBillingRecordEntity, convertBillingRecordObject} from '../entity/billing-record.js'
 import {convertInspectRecordEntity, convertInspectRecordObject} from '../entity/inspect-record.js'
 import {convertRepairRecordEntity, convertRepairRecordObject} from '../entity/repair-record.js'
 import {
@@ -381,11 +381,11 @@ export default {
       orderId: '',
       /*类型选择*/
       recordTypeOptions: [
-        'rent-record',
+        'billing-record',
         'inspect-record',
         'repair-record'
       ],
-      recordTypeCurrentIndex: 2,
+      recordTypeCurrentIndex: 0,
       /*出租报告*/
       rentRecord:{},
       newIncomeItem: {},
@@ -488,10 +488,10 @@ export default {
     if('edit' == this.editType){
       getRecordAsync(recordType, this.recordId, res => {
         console.log('get record in edit type =', res);
-        if('rent-record' ==  recordType){
-          this.rentRecord = convertRentRecordEntity(res);
+        if('billing-record' ==  recordType){
+          this.rentRecord = convertBillingRecordEntity(res);
           this.orderId = this.rentRecord.orderId;
-          console.log('rent record object = ', this.rentRecord);
+          console.log('billing record object = ', this.rentRecord);
           this.incomeItems = this.rentRecord.income;
           this.outgoingsItems = this.rentRecord.outgoings;
           this.timeRange = this.rentRecord.timeRange;
@@ -701,7 +701,7 @@ export default {
     },
     getValidEntity: function(){
       var entity = null;
-      if('rent-record' == this.recordTypeOptions[this.recordTypeCurrentIndex]){
+      if('billing-record' == this.recordTypeOptions[this.recordTypeCurrentIndex]){
         if(!this.rentRecordObjectValidCheck()){
           return entity;
         }
@@ -710,7 +710,7 @@ export default {
         this.rentRecord.outgoings = JSON.stringify(this.outgoingsItems);
         this.rentRecord.balance = parseFloat(this.balance());
         this.rentRecord.timeRange = JSON.stringify(this.timeRange);
-        entity = convertRentRecordObject(this.rentRecord);
+        entity = convertBillingRecordObject(this.rentRecord);
         
       } else if('inspect-record' == this.recordTypeOptions[this.recordTypeCurrentIndex]){
         if(!this.inspectRecordObjectValidCheck()){

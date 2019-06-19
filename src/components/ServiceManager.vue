@@ -29,6 +29,10 @@ export default {
         {
           value: 'house-rent',
           iconUrl: '/static/house-rent.png'
+        },
+        {
+          value: 'others',
+          iconUrl: '/static/other-service.png'
         }],
       textMap: null
     }
